@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
 
-public class Player : Controller
+public class Player : CharacterController
 {
-    // Start is called before the first frame update
-    void Start()
+    protected override void Awake()
     {
-        
+        base.Awake();
     }
-
     // Update is called once per frame
     protected override void Update()
     {

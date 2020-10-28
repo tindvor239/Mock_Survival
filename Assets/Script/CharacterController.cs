@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Controller : MonoBehaviour
+public abstract class CharacterController : MonoBehaviour
 {
     [SerializeField]
     protected float movementSpeed;
@@ -9,8 +9,10 @@ public class Controller : MonoBehaviour
     protected Animator animator;
     protected virtual void Awake()
     {
-        rigidbody = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>();
+        if(GetComponent<Rigidbody>() != null)
+            rigidbody = GetComponent<Rigidbody>();
+        if (GetComponent<Animator>() != null)
+            animator = GetComponent<Animator>();
     }
     protected virtual void Update()
     {
