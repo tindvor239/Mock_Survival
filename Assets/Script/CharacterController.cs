@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
-
 public abstract class CharacterController : MonoBehaviour
 {
     [SerializeField]
-    protected float movementSpeed;
+    protected Character character;
 
     protected new Rigidbody rigidbody;
     protected Animator animator;
+    protected GameManager gameManager;
     protected virtual void Awake()
     {
         if(GetComponent<Rigidbody>() != null)
@@ -14,16 +14,20 @@ public abstract class CharacterController : MonoBehaviour
         if (GetComponent<Animator>() != null)
             animator = GetComponent<Animator>();
     }
+    protected virtual void Start()
+    {
+        gameManager = GameManager.Instance;
+    }
     protected virtual void Update()
     {
-        float h = Input.GetAxis("Horizontal") * movementSpeed;
-        float v = Input.GetAxis("Vertical") * movementSpeed;
+        float h = Input.GetAxis("Horizontal") * character.MovementSpeed;
+        float v = Input.GetAxis("Vertical") * character.MovementSpeed;
         Running(h, v);
         Rotate(h, v);
     }
     protected void Running(float horizontalInput, float verticalInput)
     {
-        float thursting = (Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput)) / movementSpeed;
+        float thursting = (Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput)) / character.MovementSpeed;
         animator.SetFloat("moveSpeed", thursting);
     }
     protected void Rotate(float horizontalInput, float verticalInput)

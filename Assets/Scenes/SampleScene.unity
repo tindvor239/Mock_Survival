@@ -122,7 +122,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: e8b53c4980b9ebd48a72355b6ffe2f3c, type: 2}
 --- !u!54 &25200221
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -162,10 +162,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 1253088498286561}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a15f461fa01b131439ef6b2cc7502114, type: 3}
+  m_Script: {fileID: 11500000, guid: 945cee41aa9daf245afaa4ec2ed4dadf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 1
+  character:
+    movementSpeed: 1
+    rotationSpeed: 0.7
+    stats:
+      hp: 1
+      maxHP:
+        baseStat: 1
+        modifiers: 
+      mp: 1
+      maxMP:
+        baseStat: 1
+        modifiers: 
+      strength:
+        baseStat: 1
+        modifiers: 
+      intelligence:
+        baseStat: 1
+        modifiers: 
+      agility:
+        baseStat: 1
+        modifiers: 
 --- !u!1 &604331956
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,7 +279,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!64 &677229194
 MeshCollider:
@@ -1102,6 +1122,7 @@ GameObject:
   - component: {fileID: 25200221}
   - component: {fileID: 25200222}
   - component: {fileID: 25200223}
+  - component: {fileID: 1253088498286562}
   m_Layer: 0
   m_Name: Male C
   m_TagString: Untagged
@@ -1109,6 +1130,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!195 &1253088498286562
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1253088498286561}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &1253962078284537
 GameObject:
   m_ObjectHideFlags: 0
