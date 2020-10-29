@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Player : CharacterController
+public class PlayerController : CharacterController
 {
     protected override void Awake()
     {
