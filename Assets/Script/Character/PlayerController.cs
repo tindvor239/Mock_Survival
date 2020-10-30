@@ -25,7 +25,7 @@ public class PlayerController : CharacterController
     {
         if(target != null)
         {
-            agent.Move(target.transform.position);
+            agent.SetDestination(target.transform.position);
         }
     }
     private void GetPositionOnClick(bool isInput)
@@ -36,11 +36,18 @@ public class PlayerController : CharacterController
             Ray ray = gameManager.MainCamera.ScreenPointToRay(Input.mousePosition);
             if(Physics.Raycast(ray, out hit))
             {
+                if (target != null)
+                {
+                    if(target.GetComponent<MoveTarget>() != null)
+                    {
+                        target.GetComponent<MoveTarget>().SelfDestruct();
+                    }
+                }
                 target = CreateMovePoint(hit.point, "Point");
             }
         }
     }
-    public GameObject CreateMovePoint (Vector3 position, string name)
+    private GameObject CreateMovePoint (Vector3 position, string name)
     {
         GameObject newObject = new GameObject();
         newObject.transform.position = position;

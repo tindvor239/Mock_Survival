@@ -2,8 +2,7 @@
 
 public class MoveTarget : MonoBehaviour
 {
-    [SerializeField]
-    private float selfDestructTime;
+    private static float selfDestructTime = 2.0f;
     private float currentDestructTime;
     private void Awake()
     {
@@ -15,7 +14,7 @@ public class MoveTarget : MonoBehaviour
         if (currentDestructTime <= 0.0f)
             SelfDestruct();
     }
-    private void SelfDestruct()
+    public void SelfDestruct()
     {
         DestroyImmediate(gameObject);
     }
