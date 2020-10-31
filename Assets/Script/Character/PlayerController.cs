@@ -9,15 +9,14 @@ public class PlayerController : CharacterController
 
     #region AI Movement
     private float movementFactor = 0;
-    private float moveAxis = 0;
-    public delegate void OnMoveToPoint();
-    public event OnMoveToPoint onMoveToPoint;
+    private bool isGetDistance = false;
+    private float distance = 1;
+    private bool isOnMouseMode = false;
     #endregion
     protected override void Awake()
     {
         base.Awake();
         agent = GetComponent<NavMeshAgent>();
-        onMoveToPoint += OnMove;
     }
     protected override void Start()
     {
@@ -26,20 +25,41 @@ public class PlayerController : CharacterController
     // Update is called once per frame
     protected override void Update()
     {
-        base.Update();
+        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
+            isOnMouseMode = false;
         GetPositionOnClick(Input.GetMouseButtonDown(0));
-        MoveToPoint();
+        if (isOnMouseMode == false)
+            base.Update();
+        else
+            MoveToPoint();
     }
     private void MoveToPoint()
     {
         if(target != null)
         {
-            if(onMoveToPoint != null && transform.position != target.transform.position)
+            float currentDistance = Vector3.Magnitude(target.transform.position - transform.position);
+            if (Vector.Epsilon(transform.position, target.transform.position) == false)
             {
-                MoveAnimation(moveAxis, movementFactor);
+                if (isGetDistance == false)
+                {
+                    distance = Vector3.Magnitude(target.transform.position - transform.position);
+                    isGetDistance = true;
+                }
+                movementFactor = Mathf.Lerp(0, 1, movementFactor += Time.deltaTime);
                 Vector3 direction = target.transform.position - transform.position;
+                if (currentDistance <= distance / 2)
+                    target.GetComponent<MoveTarget>().SelfDestruct();
                 Rotate(new Vector2(direction.x, direction.z));
+                Running(movementFactor, movementFactor);
             }
+        }
+        else
+        {
+            movementFactor = Mathf.Lerp(0, 1, movementFactor -= Time.deltaTime);
+            isGetDistance = false;
+            Running(movementFactor, movementFactor);
+            if (movementFactor <= 0)
+                isOnMouseMode = false;
         }
     }
     private void GetPositionOnClick(bool isInput)
@@ -58,6 +78,7 @@ public class PlayerController : CharacterController
                     }
                 }
                 target = CreateMovePoint(hit.point, "Point");
+                isOnMouseMode = true;
             }
         }
     }
@@ -68,14 +89,6 @@ public class PlayerController : CharacterController
         newObject.AddComponent(typeof(MoveTarget));
         newObject.name = name;
         return newObject;
-    }
-    private void MoveAnimation( float moveAxis, float moveFactor)
-    {
-        moveAxis += 100f;
-        moveFactor += moveAxis * Time.deltaTime * character.MovementSpeed;
-        Debug.Log(moveFactor);
-        animator.SetFloat("moveSpeed", moveFactor);
-
     }
 
     private void OnMove()

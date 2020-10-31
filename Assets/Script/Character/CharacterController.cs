@@ -24,6 +24,8 @@ public abstract class CharacterController : MonoBehaviour
         float v = Input.GetAxis("Vertical") * character.MovementSpeed;
         Running(h, v);
         Rotate(new Vector2(h, v));
+        Debug.Log(h);
+        Debug.Log(v);
     }
     protected void Running(float horizontalInput, float verticalInput)
     {
