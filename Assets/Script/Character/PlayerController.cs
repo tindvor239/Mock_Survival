@@ -5,10 +5,19 @@ public class PlayerController : CharacterController
     [SerializeField]
     private GameObject target;
     private NavMeshAgent agent;
+
+
+    #region AI Movement
+    private float movementFactor = 0;
+    private float moveAxis = 0;
+    public delegate void OnMoveToPoint();
+    public event OnMoveToPoint onMoveToPoint;
+    #endregion
     protected override void Awake()
     {
         base.Awake();
         agent = GetComponent<NavMeshAgent>();
+        onMoveToPoint += OnMove;
     }
     protected override void Start()
     {
@@ -25,7 +34,12 @@ public class PlayerController : CharacterController
     {
         if(target != null)
         {
-            agent.SetDestination(target.transform.position);
+            if(onMoveToPoint != null && transform.position != target.transform.position)
+            {
+                MoveAnimation(moveAxis, movementFactor);
+                Vector3 direction = target.transform.position - transform.position;
+                Rotate(new Vector2(direction.x, direction.z));
+            }
         }
     }
     private void GetPositionOnClick(bool isInput)
@@ -54,5 +68,17 @@ public class PlayerController : CharacterController
         newObject.AddComponent(typeof(MoveTarget));
         newObject.name = name;
         return newObject;
+    }
+    private void MoveAnimation( float moveAxis, float moveFactor)
+    {
+        moveAxis += 100f;
+        moveFactor += moveAxis * Time.deltaTime * character.MovementSpeed;
+        Debug.Log(moveFactor);
+        animator.SetFloat("moveSpeed", moveFactor);
+
+    }
+
+    private void OnMove()
+    {
     }
 }

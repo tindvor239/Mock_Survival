@@ -4,7 +4,7 @@ public abstract class CharacterController : MonoBehaviour
     [SerializeField]
     protected Character character;
 
-    protected new Rigidbody rigidbody;
+    protected Rigidbody rigidbody;
     protected Animator animator;
     protected GameManager gameManager;
     protected virtual void Awake()
@@ -23,17 +23,17 @@ public abstract class CharacterController : MonoBehaviour
         float h = Input.GetAxis("Horizontal") * character.MovementSpeed;
         float v = Input.GetAxis("Vertical") * character.MovementSpeed;
         Running(h, v);
-        Rotate(h, v);
+        Rotate(new Vector2(h, v));
     }
     protected void Running(float horizontalInput, float verticalInput)
     {
         float thursting = (Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput)) / character.MovementSpeed;
         animator.SetFloat("moveSpeed", thursting);
     }
-    protected void Rotate(float horizontalInput, float verticalInput)
+    protected void Rotate(Vector2 targetPosition)
     {
-        Vector3 movementVector = new Vector3(horizontalInput, rigidbody.velocity.y, verticalInput);
-        if (horizontalInput != 0 || verticalInput != 0)
+        Vector3 movementVector = new Vector3(targetPosition.x, 0, targetPosition.y);
+        if (targetPosition.x != 0 || targetPosition.y != 0)
             transform.forward = movementVector;
     }
 }
