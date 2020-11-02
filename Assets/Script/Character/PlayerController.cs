@@ -3,20 +3,16 @@ using UnityEngine.AI;
 public class PlayerController : CharacterController
 {
     [SerializeField]
-    private GameObject target;
+    private GameObject player;
     private NavMeshAgent agent;
-
-
     #region AI Movement
-    private float movementFactor = 0;
-    private bool isGetDistance = false;
-    private float distance = 1;
-    private bool isOnMouseMode = false;
+    private bool isUsingButtonMovement = false;
     #endregion
     protected override void Awake()
     {
         base.Awake();
         agent = GetComponent<NavMeshAgent>();
+        agent.speed = character.MovementSpeed;
     }
     protected override void Start()
     {
@@ -25,42 +21,40 @@ public class PlayerController : CharacterController
     // Update is called once per frame
     protected override void Update()
     {
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
-            isOnMouseMode = false;
-        GetPositionOnClick(Input.GetMouseButtonDown(0));
-        if (isOnMouseMode == false)
-            base.Update();
-        else
-            MoveToPoint();
-    }
-    private void MoveToPoint()
-    {
-        if(target != null)
+        player.transform.localPosition = new Vector3(0, 0, 0);
+        base.Update();
+        isUsingButtonMovement = Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
+        if (isUsingButtonMovement)
         {
-            float currentDistance = Vector3.Magnitude(target.transform.position - transform.position);
-            if (Vector.Epsilon(transform.position, target.transform.position) == false)
+            agent.ResetPath();
+            if (target != null)
             {
-                if (isGetDistance == false)
-                {
-                    distance = Vector3.Magnitude(target.transform.position - transform.position);
-                    isGetDistance = true;
-                }
-                movementFactor = Mathf.Lerp(0, 1, movementFactor += Time.deltaTime);
-                Vector3 direction = target.transform.position - transform.position;
-                if (currentDistance <= distance / 2)
-                    target.GetComponent<MoveTarget>().SelfDestruct();
-                Rotate(new Vector2(direction.x, direction.z));
-                Running(movementFactor, movementFactor);
+                target.GetComponent<MoveTarget>().SelfDestruct();
             }
         }
         else
         {
-            movementFactor = Mathf.Lerp(0, 1, movementFactor -= Time.deltaTime);
-            isGetDistance = false;
-            Running(movementFactor, movementFactor);
-            if (movementFactor <= 0)
-                isOnMouseMode = false;
+            GetPositionOnClick(Input.GetMouseButtonDown(0));
+            MoveToPoint();
         }
+    }
+    private void MoveToPoint()
+    {
+        if (target != null)
+        {
+            if (Vector.Epsilon(transform.position, target.transform.position) == false)
+            {
+                agent.SetDestination(target.transform.position);
+            }
+            else
+                target.GetComponent<MoveTarget>().SelfDestruct();
+        }
+        else
+        {
+            agent.ResetPath();
+        }
+        //if (animator != null)
+            //animator.SetFloat("moveSpeed", movementMotor);
     }
     private void GetPositionOnClick(bool isInput)
     {
@@ -78,17 +72,16 @@ public class PlayerController : CharacterController
                     }
                 }
                 target = CreateMovePoint(hit.point, "Point");
-                isOnMouseMode = true;
             }
         }
     }
-    private GameObject CreateMovePoint (Vector3 position, string name)
+    private Transform CreateMovePoint (Vector3 position, string name)
     {
         GameObject newObject = new GameObject();
         newObject.transform.position = position;
         newObject.AddComponent(typeof(MoveTarget));
         newObject.name = name;
-        return newObject;
+        return newObject.transform;
     }
 
     private void OnMove()
