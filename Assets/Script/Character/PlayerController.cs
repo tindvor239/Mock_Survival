@@ -1,18 +1,14 @@
 ﻿using UnityEngine;
-using UnityEngine.AI;
 public class PlayerController : CharacterController
 {
     [SerializeField]
     private GameObject player;
-    private NavMeshAgent agent;
     #region AI Movement
     private bool isUsingButtonMovement = false;
     #endregion
     protected override void Awake()
     {
         base.Awake();
-        agent = GetComponent<NavMeshAgent>();
-        agent.speed = character.MovementSpeed;
     }
     protected override void Start()
     {
@@ -27,6 +23,7 @@ public class PlayerController : CharacterController
         if (isUsingButtonMovement)
         {
             agent.ResetPath();
+            Running();
             if (target != null)
             {
                 target.GetComponent<MoveTarget>().SelfDestruct();
@@ -37,6 +34,12 @@ public class PlayerController : CharacterController
             GetPositionOnClick(Input.GetMouseButtonDown(0));
             MoveToPoint();
         }
+    }
+    protected override void Running()
+    {
+        rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * character.MovementSpeed, rigidbody.velocity.y, Input.GetAxis("Vertical") * character.MovementSpeed);
+        movementMotor = Mathf.Abs(Input.GetAxis("Horizontal")) + Mathf.Abs(Input.GetAxis("Vertical"));
+        base.Running();
     }
     private void MoveToPoint()
     {
@@ -53,8 +56,8 @@ public class PlayerController : CharacterController
         {
             agent.ResetPath();
         }
-        //if (animator != null)
-            //animator.SetFloat("moveSpeed", movementMotor);
+        if (animator != null)
+            animator.SetFloat("moveSpeed", movementMotor);
     }
     private void GetPositionOnClick(bool isInput)
     {

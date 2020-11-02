@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
+[RequireComponent(typeof(NavMeshAgent))]
 public abstract class CharacterController : MonoBehaviour
 {
     [SerializeField]
@@ -9,20 +11,16 @@ public abstract class CharacterController : MonoBehaviour
     protected Animator animator;
     [SerializeField]
     protected Transform target;
+    protected NavMeshAgent agent;
     protected GameManager gameManager;
-    private float movementMotor;
-    protected float MovementMotor
-    {
-        get => movementMotor;
-        set => movementMotor = SetMotor(value);
-    }
+    protected float movementMotor;
     public float currentDistance { get => GetDistance(); }
     protected virtual void Awake()
     {
-        if(GetComponent<Rigidbody>() != null)
-            rigidbody = GetComponent<Rigidbody>();
-        if (GetComponent<Animator>() != null)
-            animator = GetComponent<Animator>();
+        rigidbody = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
+        agent = GetComponent<NavMeshAgent>();
+        agent.speed = character.MovementSpeed;
     }
     protected virtual void Start()
     {
@@ -30,20 +28,13 @@ public abstract class CharacterController : MonoBehaviour
     }
     protected virtual void Update()
     {
-        float h = Input.GetAxis("Horizontal") * character.MovementSpeed;
-        float v = Input.GetAxis("Vertical") * character.MovementSpeed;
-        Running(h, v);
-        Rotate(new Vector2(h, v));
-        Debug.Log(movementMotor);
     }
-    protected void Running(float horizontalInput, float verticalInput)
+    protected virtual void Running()
     {
-        float thursting = (Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput)) / character.MovementSpeed;
-        rigidbody.velocity = new Vector3(horizontalInput, rigidbody.velocity.y, verticalInput);
         if(animator != null)
         {
-            animator.SetFloat("moveSpeed", thursting);
-            Debug.Log(thursting);
+            animator.SetFloat("moveSpeed", movementMotor);
+            Debug.Log(movementMotor);
         }
     }
     protected void Rotate(Vector2 targetPosition)
