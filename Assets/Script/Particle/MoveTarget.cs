@@ -8,6 +8,7 @@ public class MoveTarget : MonoBehaviour
     }
     private void Update()
     {
+
     }
     public void SelfDestruct()
     {

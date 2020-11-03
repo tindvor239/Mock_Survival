@@ -18,7 +18,6 @@ public abstract class CharacterController : MonoBehaviour
     protected virtual void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         agent.speed = character.MovementSpeed;
     }
@@ -28,13 +27,13 @@ public abstract class CharacterController : MonoBehaviour
     }
     protected virtual void Update()
     {
+
     }
     protected virtual void Running()
     {
         if(animator != null)
         {
             animator.SetFloat("moveSpeed", movementMotor);
-            Debug.Log(movementMotor);
         }
     }
     protected void Rotate(Vector2 targetPosition)
@@ -51,7 +50,7 @@ public abstract class CharacterController : MonoBehaviour
         }
         return 0;
     }
-    private float SetMotor(float value)
+    protected float SetMotor(float value)
     {
         if (currentDistance <= 2.0f)
         {

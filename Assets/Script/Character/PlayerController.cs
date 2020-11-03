@@ -3,6 +3,8 @@ public class PlayerController : CharacterController
 {
     [SerializeField]
     private GameObject player;
+    [SerializeField]
+    private ParticleSystem particle;
     #region AI Movement
     private bool isUsingButtonMovement = false;
     #endregion
@@ -18,12 +20,12 @@ public class PlayerController : CharacterController
     protected override void Update()
     {
         player.transform.localPosition = new Vector3(0, 0, 0);
-        base.Update();
         isUsingButtonMovement = Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
         if (isUsingButtonMovement)
         {
             agent.ResetPath();
             Running();
+            Rotate(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")));
             if (target != null)
             {
                 target.GetComponent<MoveTarget>().SelfDestruct();
@@ -43,11 +45,13 @@ public class PlayerController : CharacterController
     }
     private void MoveToPoint()
     {
+        movementMotor = SetMotor(movementMotor);
         if (target != null)
         {
             if (Vector.Epsilon(transform.position, target.transform.position) == false)
             {
                 agent.SetDestination(target.transform.position);
+                base.Running();
             }
             else
                 target.GetComponent<MoveTarget>().SelfDestruct();
@@ -85,9 +89,5 @@ public class PlayerController : CharacterController
         newObject.AddComponent(typeof(MoveTarget));
         newObject.name = name;
         return newObject.transform;
-    }
-
-    private void OnMove()
-    {
     }
 }
