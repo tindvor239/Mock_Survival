@@ -21,6 +21,9 @@ public class PlayerController : CharacterController
     {
         player.transform.localPosition = new Vector3(0, 0, 0);
         isUsingButtonMovement = Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
+        bool isMovementPressed = Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.S) ||
+            Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.A);
+        base.Roll(isMovementPressed && Input.GetKey(KeyCode.LeftShift));
         if (isUsingButtonMovement)
         {
             agent.ResetPath();

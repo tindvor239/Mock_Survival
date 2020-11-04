@@ -36,19 +36,22 @@ public abstract class CharacterController : MonoBehaviour
             animator.SetFloat("moveSpeed", movementMotor);
         }
     }
+    protected virtual void Roll(bool isMove)
+    {
+        if(isMove)
+        {
+            animator.SetTrigger("rolling");
+        }
+    }
+    protected void DoneRoll()
+    {
+        animator.ResetTrigger("rolling");
+    }
     protected void Rotate(Vector2 targetPosition)
     {
         Vector3 movementVector = new Vector3(targetPosition.x, 0, targetPosition.y);
         if (targetPosition.x != 0 || targetPosition.y != 0)
             transform.forward = movementVector;
-    }
-    private float GetDistance()
-    {
-        if(target != null)
-        {
-            return Vector3.Magnitude(target.transform.position - transform.position);
-        }
-        return 0;
     }
     protected float SetMotor(float value)
     {
@@ -60,5 +63,13 @@ public abstract class CharacterController : MonoBehaviour
         {
             return Mathf.Lerp(0, 1, value += Time.deltaTime);
         }
+    }
+    private float GetDistance()
+    {
+        if(target != null)
+        {
+            return Vector3.Magnitude(target.transform.position - transform.position);
+        }
+        return 0;
     }
 }
