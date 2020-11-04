@@ -1,25 +1,34 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+
 [RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Character))]
+
 public abstract class CharacterController : MonoBehaviour
 {
     [SerializeField]
     protected Character character;
     [SerializeField]
-    protected new Rigidbody rigidbody;
-    [SerializeField]
     protected Animator animator;
     [SerializeField]
     protected Transform target;
-    protected NavMeshAgent agent;
+    [SerializeField]
     protected GameManager gameManager;
+    #region Movement Member
+    [SerializeField]
+    protected new Rigidbody rigidbody;
     protected float movementMotor;
+    protected bool isRolling;
+    protected NavMeshAgent agent;
     public float currentDistance { get => GetDistance(); }
+    #endregion
     protected virtual void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = character.MovementSpeed;
+        character = GetComponent<Character>();
+        agent.speed = (character.MovementSpeed - rigidbody.drag) / 2;
     }
     protected virtual void Start()
     {
@@ -36,16 +45,14 @@ public abstract class CharacterController : MonoBehaviour
             animator.SetFloat("moveSpeed", movementMotor);
         }
     }
-    protected virtual void Roll(bool isMove)
+    protected virtual void Roll()
     {
-        if(isMove)
+        if(isRolling)
         {
+            rigidbody.AddForce(transform.forward * 50, ForceMode.Impulse);
             animator.SetTrigger("rolling");
+            isRolling = false;
         }
-    }
-    protected void DoneRoll()
-    {
-        animator.ResetTrigger("rolling");
     }
     protected void Rotate(Vector2 targetPosition)
     {

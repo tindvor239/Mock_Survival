@@ -4,7 +4,9 @@ public class PlayerController : CharacterController
     [SerializeField]
     private GameObject player;
     [SerializeField]
-    private ParticleSystem particle;
+    private GameObject particleTarget;
+    private float shiftDelayTime = 1.0f;
+    private float shiftCurrentDelayTime = 0.0f;
     #region AI Movement
     private bool isUsingButtonMovement = false;
     #endregion
@@ -21,14 +23,16 @@ public class PlayerController : CharacterController
     {
         player.transform.localPosition = new Vector3(0, 0, 0);
         isUsingButtonMovement = Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
-        bool isMovementPressed = Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.S) ||
-            Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.A);
-        base.Roll(isMovementPressed && Input.GetKey(KeyCode.LeftShift));
-        if (isUsingButtonMovement)
+        shiftCurrentDelayTime -= Time.deltaTime;
+        if (shiftCurrentDelayTime <= 0 && Input.GetKeyDown(KeyCode.LeftShift))
         {
+            isRolling = true;
+            shiftCurrentDelayTime = 1f;
+        }
+        if(isRolling)
+        {
+            Roll();
             agent.ResetPath();
-            Running();
-            Rotate(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")));
             if (target != null)
             {
                 target.GetComponent<MoveTarget>().SelfDestruct();
@@ -36,13 +40,38 @@ public class PlayerController : CharacterController
         }
         else
         {
-            GetPositionOnClick(Input.GetMouseButtonDown(0));
-            MoveToPoint();
+            if (isUsingButtonMovement && shiftCurrentDelayTime <= 0)
+            {
+                Rotate(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")));
+                Running();
+                agent.ResetPath();
+                if (target != null)
+                {
+                    target.GetComponent<MoveTarget>().SelfDestruct();
+                }
+            }
+            else
+            {
+                GetPositionOnClick(Input.GetMouseButtonDown(0));
+                MoveToPoint();
+            }
         }
     }
     protected override void Running()
     {
-        rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * character.MovementSpeed, rigidbody.velocity.y, Input.GetAxis("Vertical") * character.MovementSpeed);
+        Vector3 moveDirection = new Vector3();
+        if(Input.GetAxis("Horizontal") != 0 && Input.GetAxis("Vertical") != 0)
+        {
+            moveDirection.x = Input.GetAxis("Horizontal") * (character.MovementSpeed / 2);
+            moveDirection.z = Input.GetAxis("Vertical") * (character.MovementSpeed / 2);
+        }
+        else
+        {
+            moveDirection.x = Input.GetAxis("Horizontal") * character.MovementSpeed;
+            moveDirection.z = Input.GetAxis("Vertical") * character.MovementSpeed;
+        }
+        moveDirection.y = rigidbody.velocity.y;
+        rigidbody.velocity = moveDirection;
         movementMotor = Mathf.Abs(Input.GetAxis("Horizontal")) + Mathf.Abs(Input.GetAxis("Vertical"));
         base.Running();
     }
@@ -87,9 +116,14 @@ public class PlayerController : CharacterController
     }
     private Transform CreateMovePoint (Vector3 position, string name)
     {
-        GameObject newObject = new GameObject();
+        GameObject newObject = Instantiate(particleTarget);
+        position = new Vector3(position.x, position.y + 0.2f, position.z);
         newObject.transform.position = position;
         newObject.AddComponent(typeof(MoveTarget));
+        if(newObject.GetComponent<ParticleSystem>())
+        {
+            newObject.GetComponent<ParticleSystem>().Play();
+        }
         newObject.name = name;
         return newObject.transform;
     }

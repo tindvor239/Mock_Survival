@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e18075c683ded840a686c0f0dea3382, type: 3}
+  m_Name: Gothic Sword
+  m_EditorClassIdentifier: 
+  name: Gothic Sword
+  icon: {fileID: 21300000, guid: 5f955180d5a9f4d4089ef3782c280590, type: 3}
+  equipmentModel: {fileID: 1799894414025224147, guid: 3484730c10f8ac544a84a80ac1b76810, type: 3}
+  damage: 10
