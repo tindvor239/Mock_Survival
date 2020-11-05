@@ -7,4 +7,6 @@ public class CharacterEquipment
     public Weapon[] weapons = new Weapon[2];
     public Armor[] armors = new Armor[4];
     #endregion
+    #region Method
+    #endregion
 }

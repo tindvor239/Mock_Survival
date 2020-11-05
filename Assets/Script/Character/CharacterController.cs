@@ -3,8 +3,6 @@ using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(Character))]
-
 public abstract class CharacterController : MonoBehaviour
 {
     [SerializeField]
@@ -27,8 +25,12 @@ public abstract class CharacterController : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
-        character = GetComponent<Character>();
+        if (GetComponentInChildren<Character>() != null)
+            character = GetComponentInChildren<Character>();
+        if(GetComponentInChildren<Animator>() != null)
+            animator = GetComponentInChildren<Animator>();
         agent.speed = (character.MovementSpeed - rigidbody.drag) / 2;
+        character.onAttacking += OnAttacking;
     }
     protected virtual void Start()
     {
@@ -54,6 +56,10 @@ public abstract class CharacterController : MonoBehaviour
             isRolling = false;
         }
     }
+    protected virtual void Attack()
+    {
+        //to do: attack animation
+    }
     protected void Rotate(Vector2 targetPosition)
     {
         Vector3 movementVector = new Vector3(targetPosition.x, 0, targetPosition.y);
@@ -78,5 +84,13 @@ public abstract class CharacterController : MonoBehaviour
             return Vector3.Magnitude(target.transform.position - transform.position);
         }
         return 0;
+    }
+    private void OnAttacking()
+    {
+        if(target.gameObject.tag == "Enemy")
+        {
+            Character enemy = target.GetComponent<Character>();
+            enemy.Stats.HP -= character.Stats.PhysicalDamage.GetValue();
+        }
     }
 }

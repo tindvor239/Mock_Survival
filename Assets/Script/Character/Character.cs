@@ -12,10 +12,13 @@ public class Character : MonoBehaviour
     [SerializeField]
     private CharacterEquipment equipments;
     #endregion
+    public delegate void OnAttacking();
+    public event OnAttacking onAttacking;
     #region Properties
     public float MovementSpeed { get => movementSpeed; }
     public float RotationSpeed { get => rotationSpeed; }
     public Stats Stats { get => stats; }
+    public CharacterEquipment Equipments { get => equipments; }
     #endregion
     #region Method
     public void Equip(Equipment newEquipment)
@@ -38,12 +41,41 @@ public class Character : MonoBehaviour
             if(equipments.armors[(int)newArmor.ArmorEquipType] == null)
             {
                 equipments.armors[(int)newArmor.ArmorEquipType] = newArmor;
+                stats.ArmorRating.Add(newArmor.ArmorRating);
             }
         }
     }
     public void UnEquip(Equipment oldEquipment)
     {
-        //remove item.
+        if (oldEquipment is Weapon)
+        {
+            Weapon oldWeapon = (Weapon)oldEquipment;
+            if (oldWeapon.WeaponEquipType == WeaponEquipType.oneHanded)
+            {
+                if (equipments.weapons[(int)oldWeapon.WeaponEquipType] != null)
+                {
+                    equipments.weapons[(int)oldWeapon.WeaponEquipType] = oldWeapon;
+                    stats.PhysicalDamage.Remove(oldWeapon.Damage);
+                }
+            }
+        }
+        else if (oldEquipment is Armor)
+        {
+            Armor oldArmor = (Armor)oldEquipment;
+            if (equipments.armors[(int)oldArmor.ArmorEquipType] != null)
+            {
+                equipments.armors[(int)oldArmor.ArmorEquipType] = oldArmor;
+                stats.ArmorRating.Remove(oldArmor.ArmorRating);
+            }
+        }
+    }
+    public void Attacking()
+    {
+        if(onAttacking != null)
+        {
+            onAttacking.Invoke();
+            Debug.Log("Attacking!!");
+        }
     }
     #endregion
 }

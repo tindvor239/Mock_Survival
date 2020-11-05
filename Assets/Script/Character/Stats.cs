@@ -23,7 +23,7 @@ public class Stats
     [SerializeField]
     private Stat magicalDamage;
     [SerializeField]
-    private Stat armor;
+    private Stat armorRating;
     #region Properties
     public uint HP
     {
@@ -47,8 +47,6 @@ public class Stats
     public Stat Strength { get => strength; }
     public Stat Intelligence { get => intelligence; }
     public Stat Agility { get => agility; }
-    #endregion
-    #region Method
     public Stat PhysicalDamage
     {
         get
@@ -65,6 +63,7 @@ public class Stats
             return magicalDamage;
         }
     }
+    public Stat ArmorRating { get => armorRating; }
     #endregion
 }
 

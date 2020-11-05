@@ -4,6 +4,8 @@ public class PlayerController : CharacterController
     [SerializeField]
     private GameObject player;
     [SerializeField]
+    private Weapon startWeapon;
+    [SerializeField]
     private GameObject particleTarget;
     private float shiftDelayTime = 1.0f;
     private float shiftCurrentDelayTime = 0.0f;
@@ -13,6 +15,8 @@ public class PlayerController : CharacterController
     protected override void Awake()
     {
         base.Awake();
+        player = gameObject.GetComponentInChildren<Animator>().gameObject;
+        character.Equip(startWeapon);
     }
     protected override void Start()
     {

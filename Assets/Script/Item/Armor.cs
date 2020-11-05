@@ -7,11 +7,12 @@ public class Armor : Equipment
 {
     #region Member Field
     [SerializeField]
-    private uint armor;
+    private uint armorRating;
     [SerializeField]
     private ArmorEquipType armorEquipType;
     #endregion
     #region Properties
+    public uint ArmorRating { get => armorRating; }
     public ArmorEquipType ArmorEquipType { get => armorEquipType; }
     #endregion
 }
