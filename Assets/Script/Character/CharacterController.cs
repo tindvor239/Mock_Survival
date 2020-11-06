@@ -38,7 +38,7 @@ public abstract class CharacterController : MonoBehaviour
             character = GetComponentInChildren<Character>();
         if(GetComponentInChildren<Animator>() != null)
             animator = GetComponentInChildren<Animator>();
-        agent.speed = (character.MovementSpeed - rigidbody.drag) / 2;
+        agent.speed = character.MovementSpeed - (rigidbody.drag / 2);
         currentRollDelay = rollDelayTime;
         character.onAttacking += OnAttacking;
         currentAttackDelay = attackDelayTime;
@@ -69,8 +69,12 @@ public abstract class CharacterController : MonoBehaviour
         }
         if(isRolling)
         {
-            rigidbody.AddForce(transform.forward * 50, ForceMode.Impulse);
+            rigidbody.AddForce(transform.forward * (character.MovementSpeed * 3), ForceMode.Impulse);
             animator.SetTrigger("rolling");
+            if(target != null)
+            {
+                Destroy(target.gameObject);
+            }
             isRolling = false;
         }
     }
@@ -78,16 +82,23 @@ public abstract class CharacterController : MonoBehaviour
     {
         if(currentAttackDelay <= 0f && input)
         {
+            if (target != null && target.gameObject.tag == "Enemy")
+            {
+                Vector3 direction = target.position - transform.position;
+                Rotate(new Vector2(direction.x, direction.z));
+            }
             isAttacking = true;
             currentAttackDelay = attackDelayTime;
+        }
+        else
+        {
+            animator.ResetTrigger("attacking");
         }
         if (isAttacking)
         {
             animator.SetTrigger("attacking");
             isAttacking = false;
         }
-        else
-            animator.ResetTrigger("attacking");
     }
     protected void Rotate(Vector2 targetPosition)
     {
@@ -119,7 +130,7 @@ public abstract class CharacterController : MonoBehaviour
         if(target.gameObject.tag == "Enemy")
         {
             Character enemy = target.GetComponent<Character>();
-            enemy.Stats.HP -= character.Stats.PhysicalDamage.GetValue();
+            enemy.Stats.HP -= (int)character.Stats.PhysicalDamage.GetValue();
         }
     }
 }

@@ -6,7 +6,7 @@ public class PlayerController : CharacterController
     [SerializeField]
     private Weapon startWeapon;
     [SerializeField]
-    private GameObject particleTarget;
+    private GameObject movePointParticle;
     #region AI Movement
     private bool isUsingButtonMovement = false;
     #endregion
@@ -27,9 +27,6 @@ public class PlayerController : CharacterController
         player.transform.localPosition = new Vector3(0, 0, 0);
         isUsingButtonMovement = Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
         Roll(Input.GetKeyDown(KeyCode.LeftShift));
-        bool canAttack = movementMotor <= 0 && target != null && target.gameObject.tag == "Enemy";
-        Debug.Log(movementMotor <= 0);
-        Attack(canAttack);
         agent.ResetPath();
         if(isRolling == false)
         {
@@ -40,7 +37,10 @@ public class PlayerController : CharacterController
                 agent.ResetPath();
                 if (target != null)
                 {
-                    target.GetComponent<MoveTarget>().SelfDestruct();
+                    if (target.GetComponent<MoveTarget>() != null)
+                        target.GetComponent<MoveTarget>().SelfDestruct();
+                    else
+                        target = null;
                 }
             }
             else
@@ -48,6 +48,9 @@ public class PlayerController : CharacterController
                 GetTargetOnClick(Input.GetMouseButtonDown(0));
                 MoveToPoint();
             }
+            bool canAttack = movementMotor <= 0 && target != null && target.gameObject.tag == "Enemy";
+            Debug.Log(canAttack);
+            Attack(canAttack);
         }
     }
     protected override void Running()
@@ -107,10 +110,13 @@ public class PlayerController : CharacterController
                 {
                     agent.stoppingDistance = 2;
                     target = hit.transform;
+                    target.GetComponent<Character>().TargetParticle.Play();
                 }
                 else
                 {
                     agent.stoppingDistance = 0;
+                    if(target != null && target.gameObject.tag == "Enemy")
+                        target.GetComponent<Character>().TargetParticle.Stop();
                     target = CreateMovePoint(hit.point, "Point");
                 }    
             }
@@ -118,7 +124,7 @@ public class PlayerController : CharacterController
     }
     private Transform CreateMovePoint (Vector3 position, string name)
     {
-        GameObject newObject = Instantiate(particleTarget);
+        GameObject newObject = Instantiate(movePointParticle);
         position = new Vector3(position.x, position.y + 0.2f, position.z);
         newObject.transform.position = position;
         newObject.AddComponent(typeof(MoveTarget));

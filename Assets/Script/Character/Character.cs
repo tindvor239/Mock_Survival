@@ -8,6 +8,8 @@ public class Character : MonoBehaviour
     [SerializeField]
     private float rotationSpeed;
     [SerializeField]
+    private ParticleSystem targetParticle;
+    [SerializeField]
     private Stats stats;
     [SerializeField]
     private CharacterEquipment equipments;
@@ -17,10 +19,16 @@ public class Character : MonoBehaviour
     #region Properties
     public float MovementSpeed { get => movementSpeed; }
     public float RotationSpeed { get => rotationSpeed; }
+    public ParticleSystem TargetParticle { get => targetParticle; }
     public Stats Stats { get => stats; }
     public CharacterEquipment Equipments { get => equipments; }
     #endregion
     #region Method
+    private void Awake()
+    {
+        if (targetParticle != null)
+            targetParticle.Stop();
+    }
     public void Equip(Equipment newEquipment)
     {
         if(newEquipment is Weapon)
@@ -74,7 +82,6 @@ public class Character : MonoBehaviour
         if(onAttacking != null)
         {
             onAttacking.Invoke();
-            Debug.Log("Attacking!!");
         }
     }
     #endregion

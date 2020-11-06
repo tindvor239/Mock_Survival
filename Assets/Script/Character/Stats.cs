@@ -5,11 +5,11 @@ using System.Collections.Generic;
 public class Stats
 {
     [SerializeField]
-    private uint hp = 1;
+    private int hp = 1;
     [SerializeField]
     private Stat maxHP;
     [SerializeField]
-    private uint mp = 1;
+    private int mp = 1;
     [SerializeField]
     private Stat maxMP;
     [SerializeField]
@@ -25,15 +25,15 @@ public class Stats
     [SerializeField]
     private Stat armorRating;
     #region Properties
-    public uint HP
+    public int HP
     {
         get => hp;
-        set => hp = value;
+        set => hp = Mathf.Clamp(0, (int)maxHP.GetValue(), value);
     }
-    public uint MP
+    public int MP
     {
         get => mp;
-        set => mp = value;
+        set => mp = Mathf.Clamp(0, (int)maxMP.GetValue(), value);
     }
     public Stat MaxHP
     {
