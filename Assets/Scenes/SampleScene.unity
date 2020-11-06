@@ -397,9 +397,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 0}
   animator: {fileID: 0}
-  target: {fileID: 518359145}
+  target: {fileID: 0}
   gameManager: {fileID: 0}
+  attackDelayTime: 0
   rigidbody: {fileID: 0}
+  rollDelayTime: 1
   player: {fileID: 0}
   startWeapon: {fileID: 11400000, guid: 4f054fd660e4289448a311ad23b8c04c, type: 2}
   particleTarget: {fileID: 8580942909371086419, guid: 158e333f05c4eaf448cda9d787c10aed, type: 3}

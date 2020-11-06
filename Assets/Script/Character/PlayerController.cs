@@ -7,8 +7,6 @@ public class PlayerController : CharacterController
     private Weapon startWeapon;
     [SerializeField]
     private GameObject particleTarget;
-    private float shiftDelayTime = 1.0f;
-    private float shiftCurrentDelayTime = 0.0f;
     #region AI Movement
     private bool isUsingButtonMovement = false;
     #endregion
@@ -25,26 +23,17 @@ public class PlayerController : CharacterController
     // Update is called once per frame
     protected override void Update()
     {
+        base.Update();
         player.transform.localPosition = new Vector3(0, 0, 0);
         isUsingButtonMovement = Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
-        shiftCurrentDelayTime -= Time.deltaTime;
-        if (shiftCurrentDelayTime <= 0 && Input.GetKeyDown(KeyCode.LeftShift))
+        Roll(Input.GetKeyDown(KeyCode.LeftShift));
+        bool canAttack = movementMotor <= 0 && target != null && target.gameObject.tag == "Enemy";
+        Debug.Log(movementMotor <= 0);
+        Attack(canAttack);
+        agent.ResetPath();
+        if(isRolling == false)
         {
-            isRolling = true;
-            shiftCurrentDelayTime = 1f;
-        }
-        if(isRolling)
-        {
-            Roll();
-            agent.ResetPath();
-            if (target != null)
-            {
-                target.GetComponent<MoveTarget>().SelfDestruct();
-            }
-        }
-        else
-        {
-            if (isUsingButtonMovement && shiftCurrentDelayTime <= 0)
+            if (isUsingButtonMovement && currentRollDelay <= 0)
             {
                 Rotate(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")));
                 Running();
@@ -56,7 +45,7 @@ public class PlayerController : CharacterController
             }
             else
             {
-                GetPositionOnClick(Input.GetMouseButtonDown(0));
+                GetTargetOnClick(Input.GetMouseButtonDown(0));
                 MoveToPoint();
             }
         }
@@ -99,22 +88,31 @@ public class PlayerController : CharacterController
         if (animator != null)
             animator.SetFloat("moveSpeed", movementMotor);
     }
-    private void GetPositionOnClick(bool isInput)
+    private void GetTargetOnClick(bool isInput)
     {
         if(isInput)
         {
             RaycastHit hit;
             Ray ray = gameManager.MainCamera.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit))
             {
                 if (target != null)
                 {
-                    if(target.GetComponent<MoveTarget>() != null)
+                    if (target.tag != "Enemy" && target.GetComponent<MoveTarget>() != null)
                     {
                         target.GetComponent<MoveTarget>().SelfDestruct();
                     }
                 }
-                target = CreateMovePoint(hit.point, "Point");
+                if (hit.transform.gameObject.tag == "Enemy")
+                {
+                    agent.stoppingDistance = 2;
+                    target = hit.transform;
+                }
+                else
+                {
+                    agent.stoppingDistance = 0;
+                    target = CreateMovePoint(hit.point, "Point");
+                }    
             }
         }
     }
