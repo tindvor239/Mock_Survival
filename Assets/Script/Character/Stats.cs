@@ -28,12 +28,12 @@ public class Stats
     public int HP
     {
         get => hp;
-        set => hp = Mathf.Clamp(0, (int)maxHP.GetValue(), value);
+        set => hp = Mathf.Clamp(value, 0, (int)maxHP.GetValue());
     }
     public int MP
     {
         get => mp;
-        set => mp = Mathf.Clamp(0, (int)maxMP.GetValue(), value);
+        set => mp = Mathf.Clamp(value, 0, (int)maxMP.GetValue());
     }
     public Stat MaxHP
     {

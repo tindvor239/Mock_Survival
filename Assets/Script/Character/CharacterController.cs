@@ -87,12 +87,26 @@ public abstract class CharacterController : MonoBehaviour
                 Vector3 direction = target.position - transform.position;
                 Rotate(new Vector2(direction.x, direction.z));
             }
+            for(sbyte i = 0; i < character.WeaponHitDetects.Length; i++)
+            {
+                if(character.Equipments.weapons[i] != null)
+                {
+                    character.WeaponHitDetects[i].Collider.enabled = true;
+                }
+            }
             isAttacking = true;
             currentAttackDelay = attackDelayTime;
         }
         else
         {
             animator.ResetTrigger("attacking");
+            for (sbyte i = 0; i < character.WeaponHitDetects.Length; i++)
+            {
+                if (character.Equipments.weapons[i] != null)
+                {
+                    character.WeaponHitDetects[i].Collider.enabled = false;
+                }
+            }
         }
         if (isAttacking)
         {
@@ -129,8 +143,21 @@ public abstract class CharacterController : MonoBehaviour
     {
         if(target.gameObject.tag == "Enemy")
         {
-            Character enemy = target.GetComponent<Character>();
-            enemy.Stats.HP -= (int)character.Stats.PhysicalDamage.GetValue();
+            for (sbyte i = 0; i < character.WeaponHitDetects.Length; i++)
+            {
+                if (character.Equipments.weapons[i] != null)
+                {
+                    if(character.WeaponHitDetects[i].hitTargets.Count != 0)
+                    {
+                        for(sbyte j = 0; j < character.WeaponHitDetects[i].hitTargets.Count; j++)
+                        {
+                            character.WeaponHitDetects[i].hitTargets[j].Stats.HP -= (int)character.Stats.PhysicalDamage.GetValue();
+                        }
+                    }
+                    if(character.WeaponHitDetects[i].hitTargets != null)
+                        character.WeaponHitDetects[i].hitTargets.RemoveAll(item => item != null);
+                }
+            }
         }
     }
 }

@@ -13,6 +13,10 @@ public class Character : MonoBehaviour
     private Stats stats;
     [SerializeField]
     private CharacterEquipment equipments;
+    [SerializeField]
+    private GameObject[] weaponhands = new GameObject[2];
+    [SerializeField]
+    private WeaponHitDetect[] weaponHitDetects = new WeaponHitDetect[2];
     #endregion
     public delegate void OnAttacking();
     public event OnAttacking onAttacking;
@@ -22,6 +26,7 @@ public class Character : MonoBehaviour
     public ParticleSystem TargetParticle { get => targetParticle; }
     public Stats Stats { get => stats; }
     public CharacterEquipment Equipments { get => equipments; }
+    public WeaponHitDetect[] WeaponHitDetects { get => weaponHitDetects; }
     #endregion
     #region Method
     private void Awake()
@@ -38,6 +43,9 @@ public class Character : MonoBehaviour
             {
                 if(equipments.weapons[(int)newWeapon.WeaponEquipType] == null)
                 {
+                    GameObject newGameObject = Instantiate(newWeapon.EquipmentModel, weaponhands[(int)newWeapon.WeaponEquipType].transform);
+                    newGameObject.name = newWeapon.name;
+                    weaponHitDetects[(int)newWeapon.WeaponEquipType] = newGameObject.GetComponent<WeaponHitDetect>();
                     equipments.weapons[(int)newWeapon.WeaponEquipType] = newWeapon;
                     stats.PhysicalDamage.Add(newWeapon.Damage);
                 }
