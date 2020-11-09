@@ -17,6 +17,8 @@ public class Character : MonoBehaviour
     private GameObject[] weaponhands = new GameObject[2];
     [SerializeField]
     private WeaponHitDetect[] weaponHitDetects = new WeaponHitDetect[2];
+    [SerializeField]
+    private bool isAlive = true;
     #endregion
     public delegate void OnAttacking();
     public event OnAttacking onAttacking;
@@ -33,6 +35,10 @@ public class Character : MonoBehaviour
     {
         if (targetParticle != null)
             targetParticle.Stop();
+    }
+    private void Update()
+    {
+        isAlive = stats.HP <= 0 ? false : true;
     }
     public void Equip(Equipment newEquipment)
     {
