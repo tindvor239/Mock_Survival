@@ -39,7 +39,10 @@ public class Stats
     {
         get
         {
-            maxHP.Modifiers[0] = strength.GetValue() * 3;
+            if(maxHP.Modifiers.Count != 0)
+                maxHP.Modifiers[0] = strength.GetValue() * 3;
+            else
+                maxHP.Modifiers.Add(strength.GetValue() * 3);
             return maxHP;
         }
     }
@@ -94,9 +97,12 @@ public class Stat
     public uint GetValue()
     {
         uint finalStat = baseStat;
-        foreach (uint modifier in modifiers)
+        if(modifiers.Count != 0)
         {
-            finalStat += modifier;
+            foreach (uint modifier in modifiers)
+            {
+                finalStat += modifier;
+            }
         }
         return finalStat;
     }
@@ -109,15 +115,6 @@ public class Stat
     {
         if (stat != 0)
             modifiers.Remove(stat);
-    }
-    public List<uint> SetModifier(List<uint> modifier)
-    {
-        List<uint> result = new List<uint>();
-        for (int i = 0; i < modifiers.Count; i++)
-        {
-            result.Add(modifier[i]);
-        }
-        return result;
     }
     #endregion
 }

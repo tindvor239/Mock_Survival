@@ -98,5 +98,9 @@ public class Character : MonoBehaviour
             onAttacking.Invoke();
         }
     }
+    public void DealingDamage(Stats characterStats)
+    {
+        characterStats.HP -= (int)stats.PhysicalDamage.GetValue();
+    }
     #endregion
 }

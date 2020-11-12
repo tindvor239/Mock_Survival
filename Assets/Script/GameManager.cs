@@ -4,7 +4,7 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField]
     private PlayerController player;
-    private Camera mainCamera;
+    private static Camera mainCamera;
     private static float mouseSpeed = 20.0f;
     #region Singleton
     private static GameManager instance;

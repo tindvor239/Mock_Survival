@@ -49,8 +49,8 @@ public class PlayerController : CharacterController
                 MoveToPoint();
             }
             bool canAttack = movementMotor <= 0 && target != null && target.gameObject.tag == "Enemy";
-            Debug.Log(canAttack);
-            Attack(canAttack);
+            if(currentAttackDelay <= 0f)
+                Attack(canAttack, "Enemy");
         }
     }
     protected override void Running()
@@ -110,13 +110,21 @@ public class PlayerController : CharacterController
                 {
                     agent.stoppingDistance = 2;
                     target = hit.transform;
-                    target.GetComponent<Character>().TargetParticle.Play();
+                    if(target.GetComponent<Character>() != null)
+                        target.GetComponent<Character>().TargetParticle.Play();
+                    else if(target.GetComponentInChildren<Character>() != null)
+                        target.GetComponentInChildren<Character>().TargetParticle.Play();
                 }
                 else
                 {
                     agent.stoppingDistance = 0;
                     if(target != null && target.gameObject.tag == "Enemy")
-                        target.GetComponent<Character>().TargetParticle.Stop();
+                    {
+                        if(target.GetComponent<Character>() != null)
+                            target.GetComponent<Character>().TargetParticle.Stop();
+                        else if (target.GetComponentInChildren<Character>() != null)
+                            target.GetComponentInChildren<Character>().TargetParticle.Stop();
+                    }
                     target = CreateMovePoint(hit.point, "Point");
                 }    
             }

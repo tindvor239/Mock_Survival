@@ -10,10 +10,16 @@ public class WeaponHitDetect : MonoBehaviour
     public Collider Collider { get => collider; }
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Enemy" && other.GetComponent<Character>() != null)
+        if(other.tag == "Enemy" || other.tag == "Player")
         {
-            hitTargets.Add(other.GetComponent<Character>());
+            Character character = null;
+            if(other.GetComponent<Character>() != null)
+                character = other.GetComponent<Character>();
+            else if(other.GetComponentInChildren<Character>() != null)
+                character = other.GetComponentInChildren<Character>();
+            hitTargets.Add(character);
             hitTargets = hitTargets.Distinct().ToList();
+            Debug.Log(other.tag == "Player");
         }
     }
 }

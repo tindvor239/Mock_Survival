@@ -40,8 +40,8 @@ public abstract class CharacterController : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
         agent.speed = character.MovementSpeed - (rigidbody.drag / 2);
         currentRollDelay = rollDelayTime;
-        character.onAttacking += OnAttacking;
         currentAttackDelay = attackDelayTime;
+        character.onAttacking += OnAttacking;
     }
     protected virtual void Start()
     {
@@ -78,11 +78,11 @@ public abstract class CharacterController : MonoBehaviour
             isRolling = false;
         }
     }
-    protected virtual void Attack(in bool input)
+    protected virtual void Attack(in bool input, string targetTag)
     {
-        if(currentAttackDelay <= 0f && input)
+        if(input)
         {
-            if (target != null && target.gameObject.tag == "Enemy")
+            if (target != null && target.gameObject.tag == targetTag)
             {
                 Vector3 direction = target.position - transform.position;
                 Rotate(new Vector2(direction.x, direction.z));
@@ -141,20 +141,20 @@ public abstract class CharacterController : MonoBehaviour
     }
     private void OnAttacking()
     {
-        if(target.gameObject.tag == "Enemy")
+        if (target.gameObject.tag == "Enemy" || target.gameObject.tag == "Player")
         {
             for (sbyte i = 0; i < character.WeaponHitDetects.Length; i++)
             {
                 if (character.Equipments.weapons[i] != null)
                 {
-                    if(character.WeaponHitDetects[i].hitTargets.Count != 0)
+                    if (character.WeaponHitDetects[i].hitTargets.Count != 0)
                     {
-                        for(sbyte j = 0; j < character.WeaponHitDetects[i].hitTargets.Count; j++)
+                        for (sbyte j = 0; j < character.WeaponHitDetects[i].hitTargets.Count; j++)
                         {
-                            character.WeaponHitDetects[i].hitTargets[j].Stats.HP -= (int)character.Stats.PhysicalDamage.GetValue();
+                            character.DealingDamage(character.WeaponHitDetects[i].hitTargets[j].Stats);
                         }
                     }
-                    if(character.WeaponHitDetects[i].hitTargets != null)
+                    if (character.WeaponHitDetects[i].hitTargets != null)
                         character.WeaponHitDetects[i].hitTargets.RemoveAll(item => item != null);
                 }
             }
