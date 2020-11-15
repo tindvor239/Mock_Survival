@@ -15,7 +15,7 @@ public class CreateRoom : MonoBehaviour
     }
     public void OnClick_CreateRoom()
     {
-        if (nameField.text != "")
+        if(nameField.text != "")
             testConnect.OnClick_CreateRoom(nameField.text, privateToggle.isOn);
     }
 

@@ -11,32 +11,39 @@ public class Room : MonoBehaviour
     [SerializeField]
     private Text host;
     [SerializeField]
-    private Text players;
-    private GameManager gameManager;
+    private Text currentPlayer;
+
+    private static byte maxPlayer = 4;
+    private TestConnect connection;
     #endregion
     #region Properties
-    public string ID { get => id.text; set => id.text = string.Format("ID: {0}", value); }
-    public string Name { get => name.text; set => name.text = string.Format("Name: {0}", value); }
-    public string Host { get => host.text; set => host.text = string.Format("Host: {0}", value); }
-    public sbyte Players { get => sbyte.Parse(players.text); set => players.text = string.Format("Players: {0} / 4", value.ToString()); }
+    public string ID { get => id.text.Split(' ')[1]; set => id.text = string.Format("ID: {0}", value); }
+    public string Name { get => name.text.Split(' ')[1]; set => name.text = string.Format("Name: {0}", value); }
+    public string Host { get => host.text.Split(' ')[1]; set => host.text = string.Format("Host: {0}", value); }
+    public byte MaxPlayer { get => maxPlayer; set => maxPlayer = value; }
+    public byte CurrentPlayer { get => byte.Parse(currentPlayer.text); set => currentPlayer.text = string.Format("Players: {0} / {1}", value.ToString(), maxPlayer); }
     #endregion
     #region Contructor
-    public void Construct (string id, string name, string host, sbyte players)
+    public void Construct (string id, string name, string host, byte currentPlayer, byte maxplayers)
     {
         ID = id;
         Name = name;
         Host = host;
-        Players = players;
+        MaxPlayer = maxplayers;
+        CurrentPlayer = currentPlayer;
     }
 
     #endregion
     private void Start()
     {
-        gameManager = GameManager.Instance;
+        connection = TestConnect.Instance;
+    }
+    public string GetInfo()
+    {
+        return string.Format("{0}_{1}_{2}", ID, Name, Host);
     }
     public void OnClick_Join()
     {
-        PhotonNetwork.JoinRoom(ID);
-        gameManager.LoadScene(1);
+        connection.OnClick_JoinRoom(this);
     }
 }

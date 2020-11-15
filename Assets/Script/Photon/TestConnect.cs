@@ -11,7 +11,7 @@ public class TestConnect : MonoBehaviourPunCallbacks
     [SerializeField]
     private GameObject roomContent;
     [SerializeField]
-    private List<Room> rooms;
+    private List<Room> rooms = new List<Room>();
     #region Properties
     #endregion
     #region Singleton
@@ -25,8 +25,14 @@ public class TestConnect : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     private void Start()
     {
-        PhotonNetwork.GameVersion = "0.0.1";
-        PhotonNetwork.ConnectUsingSettings();
+        if (!PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.OfflineMode = false;
+            PhotonNetwork.GameVersion = "0.0.1";
+            PhotonNetwork.ConnectUsingSettings();
+        }
+        else
+            Debug.Log("You're Already Connected");
     }
 
     // Update is called once per frame
@@ -37,53 +43,70 @@ public class TestConnect : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        print(PhotonNetwork.LocalPlayer.NickName);
-        PhotonNetwork.JoinLobby();
+        PhotonNetwork.AutomaticallySyncScene = false;
+        PhotonNetwork.NickName = "Steave";
+        PhotonNetwork.JoinLobby(TypedLobby.Default);
+    }
+    public override void OnJoinedLobby()
+    {
+
     }
     public override void OnDisconnected(DisconnectCause cause)
     {
-        print("Disconnected from server for reason " + cause.ToString());
+
     }
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        foreach(RoomInfo info in roomList)
+        foreach(RoomInfo roomInfo in roomList)
         {
-            if(info.RemovedFromList)
+            if(roomInfo.RemovedFromList)
             {
-                foreach(Room room in rooms)
+                int index = rooms.FindIndex(x => x.GetInfo() == roomInfo.Name);
+                if(index != -1)
                 {
-                    if (room.Name == info.Name)
-                        Destroy(room.gameObject);
+                    Destroy(rooms[index].gameObject);
+                    rooms.RemoveAt(index);
                 }
+            }
+            else
+            {
+                GameObject newObject = Instantiate(roomPrefab, roomContent.transform);
+                Room newRoom = newObject.GetComponent<Room>();
+                string[] info = roomInfo.Name.Split('_');
+                newRoom.Construct(info[0], info[1], info[2], (byte)roomInfo.PlayerCount, roomInfo.MaxPlayers);
+                rooms.Add(newRoom);
             }
         }
     }
-    public void OnClick_CreateRoom(string name, bool isPrivate)
+    public void OnClick_CreateRoom(string roomName, bool isPrivate)
     {
-        if (!PhotonNetwork.IsConnected)
+        RoomOptions options = new RoomOptions() { IsVisible = !isPrivate,  IsOpen = true, MaxPlayers = 4 };
+        string id = string.Format("{0}_{1}_{2}", roomCount + 1, roomName, PhotonNetwork.NickName);
+        if (PhotonNetwork.CreateRoom(id, options, TypedLobby.Default))
         {
-            Debug.Log("you have already join a room.");
-            return;
+            Console.Instance.Print("Create Room Successfully", Color.green);
+            PhotonNetwork.LoadLevel(1);
         }
-        RoomOptions options = new RoomOptions();
-        options.IsVisible = isPrivate;
-        options.MaxPlayers = 4;
-        // create a gameobject rooms and storage in a list. (or get list of rooms and genarate id for created room).
-        string id = string.Format("{0}", roomCount + 1);
-        GameObject newObject = Instantiate(roomPrefab, roomContent.transform);
-        Room newRoom = newObject.GetComponent<Room>();
-        newRoom.Construct(id, name, "", 1);
-        rooms.Add(newRoom);
-        PhotonNetwork.CreateRoom(id, options);
+        else
+        {
+            Console.Instance.Print("Create Room Failed", Color.red);
+        }
     }
-
+    public override void OnJoinedRoom()
+    {
+        
+    }
     public override void OnCreatedRoom()
     {
-        Debug.Log("created room successfully");
+        Console.Instance.Print("Room Created Successfully", Color.green);
     }
-
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
-        Debug.Log("fail to create room, u already join a room??");
+        Console.Instance.Print("Create Room Failed: "+ message, Color.red);
+    }
+    public void OnClick_JoinRoom(Room room)
+    {
+        PhotonNetwork.JoinRoom(room.GetInfo());
+        PhotonNetwork.LoadLevel(1);
     }
 }

@@ -19,9 +19,13 @@ public class GameManager : MonoBehaviour
     public PlayerController Player { get => player; }
     public static GameManager Instance { get => instance;}
     #endregion
-    public void LoadScene(sbyte index)
+    public void LoadScene(byte index)
     {
         SceneManager.LoadScene(index);
+    }
+    public void Quit()
+    {
+        Application.Quit();
     }
     // Update is called once per frame
     private void Update()
