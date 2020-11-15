@@ -9,12 +9,18 @@ public class CreateRoom : MonoBehaviour
     private Toggle privateToggle;
     private TestConnect testConnect;
 
-    private void Awake()
+    private void Start()
     {
         testConnect = TestConnect.Instance;
     }
-    public void OnCLick_CreateRoom()
+    public void OnClick_CreateRoom()
     {
-        testConnect.OnClick_CreateRoom(nameField.text, privateToggle.isOn);
+        if (nameField.text != "")
+            testConnect.OnClick_CreateRoom(nameField.text, privateToggle.isOn);
+    }
+
+    public void OnClick_Close()
+    {
+        gameObject.SetActive(false);
     }
 }

@@ -2,26 +2,29 @@
 using Photon.Realtime;
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
 public class TestConnect : MonoBehaviourPunCallbacks
 {
-    [SerializeField]
-    private GameObject createRoomPanel;
-    private static TestConnect instance;
     private int roomCount = 0;
-
+    [SerializeField]
+    private GameObject roomPrefab;
+    [SerializeField]
+    private GameObject roomContent;
+    [SerializeField]
+    private List<Room> rooms;
     #region Properties
-    public static TestConnect Instance { get => instance; }
     #endregion
+    #region Singleton
+    private static TestConnect instance;
+    public static TestConnect Instance { get => instance; }
     private void Awake()
     {
-        
+        instance = this;
     }
+    #endregion
     // Start is called before the first frame update
     private void Start()
     {
-        print("Connecting to server. ");
         PhotonNetwork.GameVersion = "0.0.1";
         PhotonNetwork.ConnectUsingSettings();
     }
@@ -34,7 +37,8 @@ public class TestConnect : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        print("Connected to server. ");
+        print(PhotonNetwork.LocalPlayer.NickName);
+        PhotonNetwork.JoinLobby();
     }
     public override void OnDisconnected(DisconnectCause cause)
     {
@@ -42,16 +46,44 @@ public class TestConnect : MonoBehaviourPunCallbacks
     }
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        base.OnRoomListUpdate(roomList);
-        roomCount = roomList.Count;
+        foreach(RoomInfo info in roomList)
+        {
+            if(info.RemovedFromList)
+            {
+                foreach(Room room in rooms)
+                {
+                    if (room.Name == info.Name)
+                        Destroy(room.gameObject);
+                }
+            }
+        }
     }
     public void OnClick_CreateRoom(string name, bool isPrivate)
     {
+        if (!PhotonNetwork.IsConnected)
+        {
+            Debug.Log("you have already join a room.");
+            return;
+        }
         RoomOptions options = new RoomOptions();
         options.IsVisible = isPrivate;
         options.MaxPlayers = 4;
-        // create a gameobject rooms and storage in a list. (or get list of rooms and genarate id for created room)
+        // create a gameobject rooms and storage in a list. (or get list of rooms and genarate id for created room).
         string id = string.Format("{0}", roomCount + 1);
+        GameObject newObject = Instantiate(roomPrefab, roomContent.transform);
+        Room newRoom = newObject.GetComponent<Room>();
+        newRoom.Construct(id, name, "", 1);
+        rooms.Add(newRoom);
         PhotonNetwork.CreateRoom(id, options);
+    }
+
+    public override void OnCreatedRoom()
+    {
+        Debug.Log("created room successfully");
+    }
+
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    {
+        Debug.Log("fail to create room, u already join a room??");
     }
 }

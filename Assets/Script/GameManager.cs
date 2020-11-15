@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
@@ -19,6 +19,10 @@ public class GameManager : MonoBehaviour
     public PlayerController Player { get => player; }
     public static GameManager Instance { get => instance;}
     #endregion
+    public void LoadScene(sbyte index)
+    {
+        SceneManager.LoadScene(index);
+    }
     // Update is called once per frame
     private void Update()
     {
