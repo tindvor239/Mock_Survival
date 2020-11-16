@@ -20,6 +20,7 @@ public class TestConnect : MonoBehaviourPunCallbacks
     private void Awake()
     {
         instance = this;
+        DontDestroyOnLoad(this);
     }
     #endregion
     // Start is called before the first frame update
@@ -28,6 +29,7 @@ public class TestConnect : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsConnected)
         {
             PhotonNetwork.OfflineMode = false;
+            PhotonNetwork.AutomaticallySyncScene = true;
             PhotonNetwork.GameVersion = "0.0.1";
             PhotonNetwork.ConnectUsingSettings();
         }
@@ -107,6 +109,11 @@ public class TestConnect : MonoBehaviourPunCallbacks
     public void OnClick_JoinRoom(Room room)
     {
         PhotonNetwork.JoinRoom(room.GetInfo());
-        PhotonNetwork.LoadLevel(1);
+        if(!PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RPC_ChangeReadyState", RpcTarget.MasterClient);
+            photonView.RpcSecure("RPC_ChangReadyState", RpcTarget.MasterClient, true, PhotonNetwork.LocalPlayer);
+            PhotonNetwork.LoadLevel(1);
+        }
     }
 }

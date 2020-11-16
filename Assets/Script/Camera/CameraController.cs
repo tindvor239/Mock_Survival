@@ -13,9 +13,14 @@ public class CameraController : FollowerController
     // Update is called once per frame
     protected override void Update()
     {
-        Orbiting();
-        Following();
-        transform.LookAt(target);
+        if (GameManager.Instance.Player != null)
+        {
+            if (target == null)
+                target = GameManager.Instance.Player.transform;
+            Orbiting();
+            Following();
+            transform.LookAt(target);
+        }
     }
 
     private Quaternion TurnVelocity()

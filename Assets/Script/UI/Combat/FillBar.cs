@@ -12,6 +12,13 @@ public class FillBar : MonoBehaviour
     }
     protected virtual void Update()
     {
-        slider.value = (float)character.Stats.HP / (float)character.Stats.MaxHP.GetValue();
+        if (character != null)
+            GetCharacterStatToFill(character.Stats.HP, character.Stats.MaxHP.GetValue());
+        else
+            Console.Instance.Print(string.Format("Error: Don't Have Any Character In {0}, Are You Missing Something?", name), Color.red);
+    }
+    protected void GetCharacterStatToFill(float stat, float maxStat)
+    {
+        slider.value = stat / maxStat;
     }
 }

@@ -11,12 +11,11 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        mainCamera = Camera.main;
     }
     #endregion
     #region Properties
     public Camera MainCamera { get => mainCamera; }
-    public PlayerController Player { get => player; }
+    public PlayerController Player { get => player; set => player = value; }
     public static GameManager Instance { get => instance;}
     #endregion
     public void LoadScene(byte index)
@@ -30,6 +29,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        
+        if(mainCamera == null && Camera.main != null)
+        {
+            mainCamera = Camera.main;
+        }
     }
 }

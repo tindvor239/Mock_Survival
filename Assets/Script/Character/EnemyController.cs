@@ -18,7 +18,6 @@ public class EnemyController : CharacterController
     {
         base.Start();
     }
-
     // Update is called once per frame
     protected override void Update()
     {
@@ -34,5 +33,10 @@ public class EnemyController : CharacterController
             if(currentAttackDelay <= 0f)
                 Attack(canAttack, "Player");
         }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player")
+            target = other.transform;
     }
 }
